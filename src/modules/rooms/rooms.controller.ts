@@ -10,6 +10,9 @@ import { GroupDto } from '../../shared/dtos/group.dto';
 import { AuthService } from '../auth/auth.service';
 import { AddRemoveMembersGroupDto } from '../../shared/dtos/add-remove-members-group.dto';
 import { RenameGroupDto } from '../../shared/dtos/rename-group.dto';
+import { SocketServerService } from '../../shared/services/socket-server/socket-server.service';
+import { ChatEvent } from './room.gateway';
+import { Account } from '../../shared/entities/account';
 
 @Controller('rooms')
 export class RoomsController {
@@ -17,6 +20,7 @@ export class RoomsController {
     private readonly roomsService: RoomsService,
     private readonly messagesService: ChatMessageService,
     private readonly authService: AuthService,
+    private readonly socketServer: SocketServerService,
   ) {
   }
 
@@ -61,11 +65,11 @@ export class RoomsController {
     const roomGroup = await this.roomsService.createGroupByNameAndMembers(groupDto.name, groupDto.members);
     const room = await this.roomsService.findByIdWithMember(roomGroup._id);
     const resData = new RoomResDto(room, [RoomResDtoOption.join_members]);
-    // room.members.forEach((member: Account) => {
-    //   member.socketIds.forEach((socket) => {
-    //     this.socketServer.server.to(socket).emit(ChatEvent.chat, resData);
-    //   });
-    // });
+    room.members.forEach((member: Account) => {
+      member.socketIds.forEach((socket) => {
+        this.socketServer.server.to(socket).emit(ChatEvent.chat, resData);
+      });
+    });
     return resData;
   }
 

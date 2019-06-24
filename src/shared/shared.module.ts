@@ -9,6 +9,7 @@ import {Account} from './entities/account';
 import {Room} from './entities/room';
 import { NotificationService } from './helpers/notification/notification.service';
 import { AccountDevices } from './entities/account-devices';
+import { SocketServerService } from './services/socket-server/socket-server.service';
 
 @Module({
     imports: [
@@ -28,7 +29,8 @@ import { AccountDevices } from './entities/account-devices';
         NotificationService,
         AuthService,
         JwtStrategy,
+        SocketServerService,
     ],
-    exports: [AuthService, JwtStrategy, NotificationService],
+    exports: [AuthService, JwtStrategy, NotificationService, SocketServerService],
 })
 export class SharedModule {}

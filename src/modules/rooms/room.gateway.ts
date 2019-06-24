@@ -12,6 +12,7 @@ import { Logger } from '@nestjs/common';
 import { RoomResDtoOption } from '../../shared/res-dto/room-res-dto';
 import { RoomType } from '../../shared/entities/room';
 import { NotificationData } from '../../shared/helpers/notification/entites/NotificationData';
+import { SocketServerService } from '../../shared/services/socket-server/socket-server.service';
 
 interface AuthorizationData {
   authorization: string;
@@ -46,8 +47,9 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private readonly authService: AuthService,
     private readonly mesageService: ChatMessageService,
     private readonly notifyService: NotificationService,
+    private readonly socketServer: SocketServerService,
   ) {
-    // socketServer.server = this.server;
+    socketServer.server = this.server;
   }
 
   handleConnection(client: Client, ...args: any[]): any {
