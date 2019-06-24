@@ -1,4 +1,4 @@
-import { OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Client, Server } from 'socket.io';
 import { RoomsService } from './rooms.service';
 import { AuthService } from '../auth/auth.service';
@@ -38,7 +38,8 @@ export enum ChatEvent {
 }
 
 @WebSocketGateway({ namespace: 'rooms' })
-export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
+
   @WebSocketServer()
   server: Server;
 
@@ -49,9 +50,11 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private readonly notifyService: NotificationService,
     private readonly socketServer: SocketServerService,
   ) {
-    socketServer.server = this.server;
   }
 
+  afterInit(server: Server): any {
+    this.socketServer.server = server;
+  }
   handleConnection(client: Client, ...args: any[]): any {
     Logger.log('socket connected', client.id);
   }
