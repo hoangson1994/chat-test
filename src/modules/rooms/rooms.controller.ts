@@ -68,17 +68,17 @@ export class RoomsController {
     // const resData = new RoomResDto(room, [RoomResDtoOption.join_members]);
     const mess = new ChatMessage();
     mess.room = room;
-    const resData = {
+    const resDataSocket = {
       status: 1,
       message: 'Chat message',
       data: new MessageResDto(mess, [RoomResDtoOption.join_members]),
     };
     room.members.forEach((member: Account) => {
       member.socketIds.forEach((socket) => {
-        this.socketServer.server.to(socket).emit(ChatEvent.chat, resData);
+        this.socketServer.server.to(socket).emit(ChatEvent.chat, resDataSocket);
       });
     });
-    return resData;
+    return new RoomResDto(room, [RoomResDtoOption.join_members]);
   }
 
   @Post('add-members-group')
