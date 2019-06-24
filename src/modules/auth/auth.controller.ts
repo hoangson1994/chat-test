@@ -51,6 +51,7 @@ export class AuthController {
         const socketIds = [];
         const deviceTokens = [];
         account.socketIds.forEach(socket => {
+            console.log('log ra client Id ------- ', clientId);
             if (socket !== clientId) {
                 socketIds.push(socket);
             }
