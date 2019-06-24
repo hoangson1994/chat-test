@@ -13,6 +13,7 @@ import { RenameGroupDto } from '../../shared/dtos/rename-group.dto';
 import { SocketServerService } from '../../shared/services/socket-server/socket-server.service';
 import { ChatEvent } from './room.gateway';
 import { Account } from '../../shared/entities/account';
+import { ChatMessage } from '../../shared/entities/chat-message';
 
 @Controller('rooms')
 export class RoomsController {
@@ -64,7 +65,14 @@ export class RoomsController {
     }
     const roomGroup = await this.roomsService.createGroupByNameAndMembers(groupDto.name, groupDto.members);
     const room = await this.roomsService.findByIdWithMember(roomGroup._id);
-    const resData = new RoomResDto(room, [RoomResDtoOption.join_members]);
+    // const resData = new RoomResDto(room, [RoomResDtoOption.join_members]);
+    const mess = new ChatMessage();
+    mess.room = room;
+    const resData = {
+      status: 1,
+      message: 'Chat message',
+      data: new MessageResDto(mess, [RoomResDtoOption.join_members]),
+    };
     room.members.forEach((member: Account) => {
       member.socketIds.forEach((socket) => {
         this.socketServer.server.to(socket).emit(ChatEvent.chat, resData);
